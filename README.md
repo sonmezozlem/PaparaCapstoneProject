@@ -13,7 +13,7 @@ https://github.com/user-attachments/assets/87e1e194-7a44-4dec-84e2-664d44ba14b1
 ---
 # Proje Hakkında
 
-Bu proje, bir şirket bünyesinde sahada çalışan personelin masraflarını yönetebilmesi, yöneticilerin bu masrafları onaylayıp **banka simülasyonu** üzerinden ödeme yapabilmesi amacıyla geliştirilmiş **modüler**, **güvenli** ve **dokümente edilmiş** bir **.NET 8 Web API** + **Blazor WebAssembly** çözümüdür. Proje amacı, sahada çalışan personelin masraf taleplerini hızlıca sisteme girmesini, yöneticilerin bu talepleri değerlendirmesini ve onaylanan talepler için **banka simülasyonu aracılığıyla otomatik ödeme** yapılmasını sağlar. Amaç, manuel fiş toplama süreçlerini dijitalleştirerek hem çalışan hem yönetici verimliliğini artırmaktır.
+Bu proje, bir şirket bünyesinde sahada çalışan personelin masraflarını yönetebilmesi, yöneticilerin bu masrafları onaylayıp **banka simülasyonu** üzerinden ödeme yapabilmesi amacıyla geliştirilmiş **modüler**, **güvenli** ve **dokümente edilmiş** bir **.NET 8 Web API** + **Blazor WebAssembly** çözümüdür. Proje amacı, sahada çalışan personelin masraf taleplerini hızlıca sisteme girmesini, yöneticilerin bu talepleri değerlendirmesini ve onaylanan talepler için **banka simülasyonu aracılığıyla otomatik ödeme** yapılmasını sağlamaktır. Yani manuel fiş toplama süreçlerini dijitalleştirerek hem çalışan hem yönetici verimliliğini artırmaktır.
 
 ---
 
@@ -50,7 +50,7 @@ docker run -p 6379:6379 redis
 
 ### 2. appsettings.json Ayarları
 
-Kullanılan connection ayarları appsettings.json klasöründe düzenlenmelidir
+Kullanılan connection ayarları appsettings.json dosyasında düzenlenmelidir
 ```json
 "ConnectionStrings": {
   "PaparaSqlConnection": "Server=YOUR_SERVER;Initial Catalog=PaparaDb;Integrated Security=true;TrustServerCertificate=True;",
@@ -222,20 +222,58 @@ Persistence: EF Core, DbContext, Migrations, Seed işlemleri
 Presentation: Web API & Blazor WebAssembly arayüzü
 
 ```text
-└── src
-  └── Base
-    ├── Base.Application
-    ├── Base.Domain
-    ├── Base.Infrastructure
-    └── Base.Persistence
-  └── Papara
-    ├── Papara.Application
-    └── Papara.Domain
-  └── Presentation
-        ├── Papara.WebApi (Backend)
-        └── Papara.Wasm (Frontend)
-└── docs
-    └── Papara.postman_collection.json
+PaparaBootcamp/
+├── src/
+│   ├── Base/                                     # Ortak çekirdek katmanlar
+│   │   ├── Base.Application/                     # Ortak application katmanı (CQRS, pipeline, auth, ayarlar)
+│   │   │   ├── Behaviors/                        # MediatR pipeline behaviors (validation, logging, exception vb.)
+│   │   │   ├── Common/                           # Ortak DTO, response model, sabitler ve yardımcı application yapıları
+│   │   │   ├── Features/                         # Ortak feature/use-case yapıları
+│   │   │   │   └── Auth/                         # Kimlik doğrulama ve yetkilendirme işlemleri
+│   │   │   ├── Interfaces/                       # Application katmanına ait servis/repository abstraction’ları
+│   │   │   ├── Settings/                         # JWT, app options, configuration binding sınıfları
+│   │   │   ├── ConfigureServices.cs              # DI kayıtları için servis konfigürasyonu
+│   │   │   └── Base.Application.csproj           # Base.Application proje dosyası
+│   │   │
+│   │   ├── Base.Domain/                          # Ortak domain katmanı
+│   │   │   ├── Entities/                         # Base entity yapıları ve ortak domain nesneleri
+│   │   │   ├── Enums/                            # Ortak enum tanımları
+│   │   │   ├── Identity/                         # Kullanıcı, rol, claim gibi kimlik yapıları
+│   │   │   ├── Interfaces/                       # Domain seviyesindeki ortak arayüzler
+│   │   │   └── Base.Domain.csproj                # Base.Domain proje dosyası
+│   │   │
+│   │   ├── Base.Infrastructure/                  # Ortak altyapı katmanı
+│   │   │   ├── Middlewares/                      # Global exception, request/response vb. middleware’ler
+│   │   │   ├── Services/                         # Hashing, token, redis, mail vb. altyapı servis implementasyonları
+│   │   │   ├── ConfigureServices.cs              # Infrastructure DI kayıtları
+│   │   │   └── Base.Infrastructure.csproj        # Base.Infrastructure proje dosyası
+│   │   │
+│   │   └── Base.Persistence/                     # Ortak persistence katmanı (DbContext base, repo base, ortak EF yapıları)
+│   │
+│   ├── Papara/                                   # Projeye/ürüne özel iş modülü
+│   │   ├── Papara.Application/                   # Papara modülüne ait business logic ve use-case katmanı
+│   │   │   ├── Features/                         # Expense, Employee, Department vb. cqrs crud klasörleri
+│   │   │   ├── Services/                         # Papara modülüne özel application servisleri ve iş kuralları
+│   │   │   ├── ConfigureServices.cs              # Papara.Application DI kayıtları
+│   │   │   └── Papara.Application.csproj         # Papara.Application proje dosyası
+│   │   │
+│   │   ├── Papara.Domain/                        # Papara’ya özel domain katmanı
+│   │   │   ├── Entities/                         # Employee, Expense, Approval, Attachment vb. iş varlıkları
+│   │   │   ├── Enums/                            # Papara modülüne özel enum’lar
+│   │   │   └── Papara.Domain.csproj              # Papara.Domain proje dosyası
+│   │   │
+│   │   ├── Papara.Infrastructure/                # Papara modülüne özel altyapı servisleri
+│   │   │   └── Papara.Infrastructure.csproj      # Papara.Infrastructure proje dosyası
+│   │   │
+│   │   └── Papara.Persistence/                   # Papara modülüne özel veri erişim katmanı
+│   │       └── Papara.Persistence.csproj         # Papara.Persistence proje dosyası
+│   │
+│   └── Presentation/                             # Sunum katmanı
+│       ├── Papara.Wasm/                          # Blazor WebAssembly frontend çözümü
+│       └── Papara.WebApi/                        # REST API katmanı
+│
+└── docs/                                         # Proje dokümantasyon klasörü
+   └── Papara.WebApi.postman_collection.json      # API endpoint’leri için Postman koleksiyonu
 ```
 
 ---
@@ -248,6 +286,6 @@ Presentation: Web API & Blazor WebAssembly arayüzü
 ---
 
 ## 👨‍💼 Geliştirici Bilgisi
-> Geliştirici: Özlem Kalemci  
+> Geliştirici: Özlem Sönmez  
 > Proje: Papara Expense Management (Fullstack)  
 > Tarih: Mayıs 2025
