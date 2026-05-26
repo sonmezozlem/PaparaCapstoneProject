@@ -27,3 +27,18 @@ obj/
 # System
 .DS_Store
 Thumbs.db
+
+# Editor crash / migration backups
+*.Backup.tmp
+*.tmp
+
+# Local config & secrets — appsettings.Development.json kişisel ortam ayarları için
+# (User Secrets, Azure Key Vault gibi mekanizmaları üretimde kullan).
+appsettings.Development.json
+appsettings.*.local.json
+.env
+.env.local
+
+# Uploaded files (kullanıcı içeriği, repo'da yer almamalı)
+**/wwwroot/UploadedFiles/
+

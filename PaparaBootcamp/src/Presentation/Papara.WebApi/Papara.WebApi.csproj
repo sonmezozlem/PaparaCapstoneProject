@@ -6,6 +6,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>
+		<UserSecretsId>papara-webapi-c3f7e2a1-9b4d-4e8c-a5f1-7d6b2e9c8a3f</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
